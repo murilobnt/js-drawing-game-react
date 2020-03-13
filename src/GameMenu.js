@@ -4,9 +4,11 @@ function GameMenu(props) {
   return (
     <div>
     <h2>Welcome!</h2>
+    <p>Type in your username:</p>
+    <input type='text' onChange={ props.onNameChange } />
     <p>First, specify your role</p>
-    <button disabled = {props.disabled} onClick = { () => {return 'a';} }>Player</button>
-    <button disabled = {props.disabled} onClick = { () => {return 'a';} }>Voter</button>
+    <button disabled = {props.disabled} onClick = { props.onJoinPlayers }>Player</button>
+    <button disabled = {props.disabled} onClick = { props.onJoinVoters }>Voter</button>
     </div>
   );
 }

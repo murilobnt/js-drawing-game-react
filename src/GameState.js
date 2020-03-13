@@ -19,6 +19,7 @@ class GameState extends React.Component {
 
     this.state = {
       game_state : 0,
+      name : '',
       connected: false,
       subject_index : 0,
       drawing_datas : []
@@ -27,6 +28,9 @@ class GameState extends React.Component {
     this.connect();
 
     this.connect = this.connect.bind(this)
+    this.onJoinPlayers = this.onJoinPlayers.bind(this)
+    this.onJoinVoters = this.onJoinVoters.bind(this)
+    this.onNameChange = this.onNameChange.bind(this)
   }
 
   renderResultsDisplayer(){
@@ -53,12 +57,28 @@ class GameState extends React.Component {
     }
   }
 
+  onJoinPlayers(){
+    this.ws.send(JSON.stringify({action: 'join_players'}));
+  }
+
+  onJoinVoters(){
+
+  }
+
+  onNameChange(e){
+    this.setState({name: e.target.value})
+  }
+
   render(){
     let content;
     switch(this.state.game_state){
       case 0:
         content = <div>
-                    <GameMenu disabled={!this.state.connected}/>
+                    <GameMenu disabled={!this.state.connected || this.state.name.length === 0}
+                    onNameChange={this.onNameChange}
+                    onJoinPlayers={this.onJoinPlayers}
+                    onJoinVoters={this.onJoinVoters}
+                    />
                     <button onClick = {this.connect}>Retry connection</button>
                   </div>;
         break;
