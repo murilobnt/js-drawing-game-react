@@ -21,16 +21,16 @@ class GameState extends React.Component {
       game_state : 0,
       name : '',
       connected: false,
-      subject_index : 0,
-      drawing_datas : []
+      subject_index : 0
     }
-
-    this.connect();
 
     this.connect = this.connect.bind(this)
     this.onJoinPlayers = this.onJoinPlayers.bind(this)
     this.onJoinVoters = this.onJoinVoters.bind(this)
     this.onNameChange = this.onNameChange.bind(this)
+    this.handleReceivedMessage = this.handleReceivedMessage.bind(this)
+
+    this.connect();
   }
 
   renderResultsDisplayer(){
@@ -48,6 +48,17 @@ class GameState extends React.Component {
     );
   }
 
+  handleReceivedMessage(message){
+    const j_message = JSON.parse(message.data);
+    switch(j_message.about){
+      case 'op_return':
+      break;
+      case 'state':
+      this.setState({game_state : this.state.game_state + 1})
+      break;
+    }
+  }
+
   connect(){
     let HOST = window.location.origin.replace(/^http/, 'ws').replace(/:3000/, ':30000')
     this.ws = new WebSocket(HOST);
@@ -55,6 +66,8 @@ class GameState extends React.Component {
     this.ws.onopen = () => {
       this.setState({connected : true});
     }
+
+    this.ws.onmessage = this.handleReceivedMessage
   }
 
   onJoinPlayers(){
@@ -62,7 +75,7 @@ class GameState extends React.Component {
   }
 
   onJoinVoters(){
-
+    this.ws.send(JSON.stringify({action: 'join_players'}));
   }
 
   onNameChange(e){
@@ -90,7 +103,7 @@ class GameState extends React.Component {
                         const name = 'drawing_' + this.state.subject_index;
                         localStorage.setItem(name, canvas.getSaveData());
                         canvas.clear();
-                        this.setState({subject_index : this.state.subject_index + 1, drawing_datas : [...this.state.drawing_datas, {subject: subject, name: name}]})
+                        this.setState({subject_index : this.state.subject_index + 1})
                         }
                      }
         />
