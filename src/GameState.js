@@ -54,7 +54,10 @@ class GameState extends React.Component {
       case 'op_return':
       break;
       case 'state':
-      this.setState({game_state : this.state.game_state + 1})
+      this.setState({game_state : j_message.state_id});
+      break;
+      case 'next_drawing':
+      this.setState({subject_index : this.state.subject_index + 1});
       break;
     }
   }
@@ -75,7 +78,7 @@ class GameState extends React.Component {
   }
 
   onJoinVoters(){
-    this.ws.send(JSON.stringify({action: 'join_players'}));
+    this.ws.send(JSON.stringify({action: 'join_voters'}));
   }
 
   onNameChange(e){
@@ -99,11 +102,9 @@ class GameState extends React.Component {
         content =
           <DrawingBoard
           subject = {this.subjects[this.state.subject_index].name}
-          onSelect = { (canvas, subject) => {
-                        const name = 'drawing_' + this.state.subject_index;
-                        localStorage.setItem(name, canvas.getSaveData());
-                        canvas.clear();
-                        this.setState({subject_index : this.state.subject_index + 1})
+          onSelect = { (img) => {
+                        const subject = this.subjects[this.state.subject_index].name;
+                        this.ws.send(JSON.stringify({action: 'send_drawing', subject: subject, img:img}))
                         }
                      }
         />
