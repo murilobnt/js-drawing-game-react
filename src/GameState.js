@@ -3,6 +3,7 @@ import React from 'react';
 import DrawingBoard from './DrawingBoard'
 import ResultsDisplayer from './ResultsDisplayer'
 import GameMenu from './GameMenu'
+import VoteDrawings from './VoteDrawings'
 
 class GameState extends React.Component {
   subjects = [
@@ -18,10 +19,11 @@ class GameState extends React.Component {
     super(props);
 
     this.state = {
-      game_state : 0,
+      game_state : 'menu',
       name : '',
       connected: false,
-      subject_index : 0
+      subject_index : 0,
+      game_content : {}
     }
 
     this.connect = this.connect.bind(this)
@@ -57,8 +59,15 @@ class GameState extends React.Component {
       this.setState({game_state : j_message.state_id});
       break;
       case 'next_drawing':
-      this.setState({subject_index : this.state.subject_index + 1});
+      if(this.state.subject_index === this.subjects.length - 1){
+        this.ws.send(JSON.stringify({action: 'ready_for_votes'}));
+        this.setState({game_state : 'results'})
+      } else {
+        this.setState({subject_index : this.state.subject_index + 1});
+      }
       break;
+      case 'votes':
+      this.setState({game_state : 'votes', game_content : message.content})
     }
   }
 
@@ -74,7 +83,7 @@ class GameState extends React.Component {
   }
 
   onJoinPlayers(){
-    this.ws.send(JSON.stringify({action: 'join_players'}));
+    this.ws.send(JSON.stringify({action: 'join_players', name: this.state.name}));
   }
 
   onJoinVoters(){
@@ -88,7 +97,7 @@ class GameState extends React.Component {
   render(){
     let content;
     switch(this.state.game_state){
-      case 0:
+      case 'menu':
         content = <div>
                     <GameMenu disabled={!this.state.connected || this.state.name.length === 0}
                     onNameChange={this.onNameChange}
@@ -98,7 +107,7 @@ class GameState extends React.Component {
                     <button onClick = {this.connect}>Retry connection</button>
                   </div>;
         break;
-      case 1:
+      case 'drawing':
         content =
           <DrawingBoard
           subject = {this.subjects[this.state.subject_index].name}
@@ -109,8 +118,14 @@ class GameState extends React.Component {
                      }
         />
         break;
-        default:
-        content = <h1>erm</h1>
+      case 'results':
+        content = <h1>surprised pikachu</h1>
+      break;
+      case 'votes':
+        content = <VoteDrawings content={this.state.game_content} />
+        break;
+      default:
+        content = <h1>I am error</h1>
     }
     return(
       <div>
