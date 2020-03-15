@@ -11,7 +11,7 @@ function VoteDrawings(props){
       {props.game_content[key].map((data) => {
       return (
         <tr key={"tr_" + data.from + "_" + key}>
-          <td><img src={data.img} width={100} /></td>
+          <td><img alt={"drawing"} src={data.img} width={100} /></td>
           <td><button key={"btn_" + data.from + "_" + key}
                       onClick={() => props.castVote(key, data.from)}
                       disabled={key in props.votes}>

@@ -29,6 +29,7 @@ class GameState extends React.Component {
     }
 
     this.cli_hash = Math.random().toString(36).substring(7);
+    this.votes_on_player = {};
 
     this.connect = this.connect.bind(this)
     this.onJoinPlayers = this.onJoinPlayers.bind(this)
@@ -36,6 +37,7 @@ class GameState extends React.Component {
     this.onNameChange = this.onNameChange.bind(this)
     this.handleReceivedMessage = this.handleReceivedMessage.bind(this)
     this.castVote = this.castVote.bind(this)
+    this.onFinishVoting = this.onFinishVoting.bind(this)
 
     this.connect();
   }
@@ -72,7 +74,12 @@ class GameState extends React.Component {
       }
       break;
       case 'votes':
-      this.setState({game_state : 'votes', game_content : j_message.content})
+        j_message.player_names.forEach((player) => {
+          this.votes_on_player[player] = 0;
+        })
+        this.setState({game_state : 'votes', game_content : j_message.content})
+      break;
+      default:
       break;
     }
   }
@@ -105,11 +112,14 @@ class GameState extends React.Component {
   castVote(subject, player_name){
     let local_votes = this.state.votes;
     local_votes[subject] = player_name;
+
+    this.votes_on_player[player_name] = this.votes_on_player[player_name] + 1;
+
     this.setState({votes: local_votes});
   }
 
   onFinishVoting(){
-
+    console.log(this.votes_on_player)
   }
 
   render(){
@@ -142,8 +152,9 @@ class GameState extends React.Component {
       case 'votes':
         content = <VoteDrawings
                     game_content={this.state.game_content}
-                    castVote={this.castVote}
                     votes={this.state.votes}
+                    castVote={this.castVote}
+                    onFinish={this.onFinishVoting}
                     />
       break;
       case 'waiting_screen':
@@ -154,6 +165,7 @@ class GameState extends React.Component {
       break;
       default:
         content = <h1>I am error</h1>
+      break;
     }
     return(
       <div>
