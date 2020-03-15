@@ -3,44 +3,33 @@ import React from 'react';
 function VoteDrawings(props){
   const what = Object.keys(props.game_content).map((key) => {
     return (
-      <div>
-      <p>{key === '[object Object]' ? '' : key}</p>
+      <div key={"div_" + key}>
+      {key === '[object Object]' ? '' : <h2>Players were prompted to draw a {key}!</h2>}
+      {key === '[object Object]' ? '' : <p>This is what they did:</p>}
+      <table>
+      <tbody>
       {props.game_content[key].map((data) => {
       return (
-        <div>
-          <p>{data.from} has drawn...</p>
-          <img src={data.img} />
-        </div>
+        <tr key={"tr_" + data.from + "_" + key}>
+          <td><img src={data.img} width={100} /></td>
+          <td><button key={"btn_" + data.from + "_" + key}
+                      onClick={() => props.castVote(key, data.from)}
+                      disabled={key in props.votes}>
+              Vote this!
+              </button></td>
+        </tr>
       );
     })}
+    </tbody>
+    </table>
     </div>
     )
   })
 
-  // props.content.forEach((subj, data) => {
-  //   contents.push(
-  //     <div>
-  //     <h2>Players were prompted to draw a {subj}!</h2>
-  //     <p>This is what they did:</p>
-  //     <table style={{width: "100%"}}>
-  //       <tr>
-  //         <td>{data[0].from}</td>
-  //         <td>{data[1].from}</td>
-  //       </tr>
-  //       <tr>
-  //         <td>{data[0].img}</td>
-  //         <td>{data[1].img}</td>
-  //       </tr>
-  //     </table>
-  //     <p>Cast your vote!</p>
-  //     <button>a</button>
-  //     <button>b</button>
-  //     </div>
-  //   )
-  // })
   return (
     <div>
-    {what}
+      {what}
+      <button onClick={props.onFinish}>Finish!</button>
     </div>
   );
 }

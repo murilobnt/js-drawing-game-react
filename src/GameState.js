@@ -23,7 +23,9 @@ class GameState extends React.Component {
       name : '',
       connected: false,
       subject_index : 0,
-      game_content : {}
+      game_content : {},
+      votes : {},
+      await_reason: ''
     }
 
     this.cli_hash = Math.random().toString(36).substring(7);
@@ -33,6 +35,7 @@ class GameState extends React.Component {
     this.onJoinVoters = this.onJoinVoters.bind(this)
     this.onNameChange = this.onNameChange.bind(this)
     this.handleReceivedMessage = this.handleReceivedMessage.bind(this)
+    this.castVote = this.castVote.bind(this)
 
     this.connect();
   }
@@ -69,7 +72,7 @@ class GameState extends React.Component {
       }
       break;
       case 'votes':
-        this.setState({game_state : 'votes', game_content : j_message.content})
+      this.setState({game_state : 'votes', game_content : j_message.content})
       break;
     }
   }
@@ -86,15 +89,27 @@ class GameState extends React.Component {
   }
 
   onJoinPlayers(){
+    this.setState({game_state: 'waiting_screen', await_reason: 'We need more players.'})
     this.ws.send(JSON.stringify({action: 'join_players', name: this.state.name, cli_hash: this.cli_hash}));
   }
 
   onJoinVoters(){
+    this.setState({game_state: 'waiting_screen', await_reason: 'We need to wait for players to finish their drawings.'})
     this.ws.send(JSON.stringify({action: 'join_voters'}));
   }
 
   onNameChange(e){
     this.setState({name: e.target.value})
+  }
+
+  castVote(subject, player_name){
+    let local_votes = this.state.votes;
+    local_votes[subject] = player_name;
+    this.setState({votes: local_votes});
+  }
+
+  onFinishVoting(){
+
   }
 
   render(){
@@ -125,8 +140,17 @@ class GameState extends React.Component {
         content = <h1>surprised pikachu</h1>
       break;
       case 'votes':
-        console.log('1')
-        content = <VoteDrawings game_content={this.state.game_content} />
+        content = <VoteDrawings
+                    game_content={this.state.game_content}
+                    castVote={this.castVote}
+                    votes={this.state.votes}
+                    />
+      break;
+      case 'waiting_screen':
+        content = <div>
+                  <h2>Please wait...</h2>
+                  <p>{this.state.await_reason}</p>
+                  </div>
       break;
       default:
         content = <h1>I am error</h1>
