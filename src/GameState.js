@@ -30,6 +30,7 @@ class GameState extends React.Component {
 
     this.cli_hash = Math.random().toString(36).substring(7);
     this.votes_on_player = {};
+    this.results = {};
 
     this.connect = this.connect.bind(this)
     this.onJoinPlayers = this.onJoinPlayers.bind(this)
@@ -67,8 +68,8 @@ class GameState extends React.Component {
       break;
       case 'next_drawing':
       if(this.state.subject_index === this.subjects.length - 1){
+        this.setState({game_state: 'waiting_screen', await_reason: 'Waiting for all voters to cast their votes.'})
         this.ws.send(JSON.stringify({action: 'ready_for_votes'}));
-        this.setState({game_state : 'results'})
       } else {
         this.setState({subject_index : this.state.subject_index + 1});
       }
@@ -78,6 +79,10 @@ class GameState extends React.Component {
           this.votes_on_player[player] = 0;
         })
         this.setState({game_state : 'votes', game_content : j_message.content})
+      break;
+      case 'end_game':
+        this.results = j_message.result;
+        this.setState({game_state: 'results'})
       break;
       default:
       break;
@@ -96,12 +101,12 @@ class GameState extends React.Component {
   }
 
   onJoinPlayers(){
-    this.setState({game_state: 'waiting_screen', await_reason: 'We need more players.'})
+    this.setState({game_state: 'waiting_screen', await_reason: 'Waiting more players.'})
     this.ws.send(JSON.stringify({action: 'join_players', name: this.state.name, cli_hash: this.cli_hash}));
   }
 
   onJoinVoters(){
-    this.setState({game_state: 'waiting_screen', await_reason: 'We need to wait for players to finish their drawings.'})
+    this.setState({game_state: 'waiting_screen', await_reason: 'Waiting for players to finish their drawings.'})
     this.ws.send(JSON.stringify({action: 'join_voters'}));
   }
 
@@ -119,7 +124,8 @@ class GameState extends React.Component {
   }
 
   onFinishVoting(){
-    console.log(this.votes_on_player)
+    this.setState({game_state: 'waiting_screen', await_reason: 'Waiting for all voters to cast their votes.'})
+    this.ws.send(JSON.stringify({action: 'end_votes', votes: this.votes_on_player}));
   }
 
   render(){
@@ -147,7 +153,7 @@ class GameState extends React.Component {
         />
         break;
       case 'results':
-        content = <h1>surprised pikachu</h1>
+        content = <ResultsDisplayer results={this.results}/>
       break;
       case 'votes':
         content = <VoteDrawings
