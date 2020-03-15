@@ -31,7 +31,7 @@ function ResultsDisplayer(props){
     }
     return(
       <div>
-      <p style={{fontSize: size}}>In the {prefix} place: {who[0]}, with {who[1]} votes!</p>
+      <p style={{fontSize: size}}>In the {prefix} place: {who[0]}, with {who[1]} vote(s)!</p>
       </div>
     )
   });
