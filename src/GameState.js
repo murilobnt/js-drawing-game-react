@@ -67,7 +67,8 @@ class GameState extends React.Component {
       }
       break;
       case 'votes':
-      this.setState({game_state : 'votes', game_content : message.content})
+        this.setState({game_state : 'votes', game_content : j_message.content})
+      break;
     }
   }
 
@@ -122,8 +123,9 @@ class GameState extends React.Component {
         content = <h1>surprised pikachu</h1>
       break;
       case 'votes':
-        content = <VoteDrawings content={this.state.game_content} />
-        break;
+        console.log('1')
+        content = <VoteDrawings game_content={this.state.game_content} />
+      break;
       default:
         content = <h1>I am error</h1>
     }

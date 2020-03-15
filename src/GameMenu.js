@@ -1,6 +1,7 @@
 import React from 'react';
 
 function GameMenu(props) {
+  console.log('called')
   return (
     <div>
     <h2>Welcome!</h2>
