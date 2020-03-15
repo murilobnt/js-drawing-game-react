@@ -1,21 +1,20 @@
 import React from 'react';
 
 function VoteDrawings(props){
-  // for (const [key, value] of Object.entries(props.game_content)) {
-  //   for(const [from, img] of Object.entries(value)){
-  //
-  //   }
-  // }
-
   const what = Object.keys(props.game_content).map((key) => {
-    return props.game_content[key].map((data) => {
+    return (
+      <div>
+      <p>{key === '[object Object]' ? '' : key}</p>
+      {props.game_content[key].map((data) => {
       return (
         <div>
-        <p>{data.from} has drawn...</p>
-        <img src={data.img} />
+          <p>{data.from} has drawn...</p>
+          <img src={data.img} />
         </div>
       );
-    })
+    })}
+    </div>
+    )
   })
 
   // props.content.forEach((subj, data) => {

@@ -26,6 +26,8 @@ class GameState extends React.Component {
       game_content : {}
     }
 
+    this.cli_hash = Math.random().toString(36).substring(7);
+
     this.connect = this.connect.bind(this)
     this.onJoinPlayers = this.onJoinPlayers.bind(this)
     this.onJoinVoters = this.onJoinVoters.bind(this)
@@ -84,7 +86,7 @@ class GameState extends React.Component {
   }
 
   onJoinPlayers(){
-    this.ws.send(JSON.stringify({action: 'join_players', name: this.state.name}));
+    this.ws.send(JSON.stringify({action: 'join_players', name: this.state.name, cli_hash: this.cli_hash}));
   }
 
   onJoinVoters(){
@@ -114,7 +116,7 @@ class GameState extends React.Component {
           subject = {this.subjects[this.state.subject_index].name}
           onSelect = { (img) => {
                         const subject = this.subjects[this.state.subject_index].name;
-                        this.ws.send(JSON.stringify({action: 'send_drawing', subject: subject, img:img}))
+                        this.ws.send(JSON.stringify({action: 'send_drawing', subject: subject, img:img, cli_hash: this.cli_hash}))
                         }
                      }
         />
