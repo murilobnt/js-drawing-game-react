@@ -51,6 +51,7 @@ function ResultsDisplayer(props){
     {podium}
     <h3>The others</h3>
     {other_players}
+    <button onClick={props.resetClient}>Main Menu</button>
     </div>
   );
 }

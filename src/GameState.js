@@ -39,6 +39,7 @@ class GameState extends React.Component {
     this.handleReceivedMessage = this.handleReceivedMessage.bind(this)
     this.castVote = this.castVote.bind(this)
     this.onFinishVoting = this.onFinishVoting.bind(this)
+    this.resetClient = this.resetClient.bind(this)
 
     this.connect();
   }
@@ -58,25 +59,28 @@ class GameState extends React.Component {
     );
   }
 
+  resetClient(){
+    this.setState({
+      game_state : 'menu',
+      name : '',
+      connected: false,
+      subject_index : 0,
+      game_content : {},
+      votes : {},
+      await_reason: ''
+    });
+
+    this.votes_on_player = {};
+    this.results = {};
+
+    this.connect();
+  }
+
   handleReceivedMessage(message){
     const j_message = JSON.parse(message.data);
     switch(j_message.about){
-      case 'op_return':
-      break;
       case 'abort_game':
-        this.setState({
-          game_state : 'menu',
-          name : '',
-          connected: false,
-          subject_index : 0,
-          game_content : {},
-          votes : {},
-          await_reason: ''
-        });
-
-        this.votes_on_player = {};
-        this.results = {};
-
+        this.resetClient();
         alert(j_message.reason + ". Finishing the game...");
       break;
       case 'state':
@@ -149,7 +153,8 @@ class GameState extends React.Component {
     switch(this.state.game_state){
       case 'menu':
         content = <div>
-                    <GameMenu disabled={!this.state.connected || this.state.name.length === 0}
+                    <GameMenu p_disabled={!this.state.connected || this.state.name.length === 0}
+                    v_disabled={!this.state.connected}
                     onNameChange={this.onNameChange}
                     onJoinPlayers={this.onJoinPlayers}
                     onJoinVoters={this.onJoinVoters}
@@ -169,7 +174,7 @@ class GameState extends React.Component {
         />
         break;
       case 'results':
-        content = <ResultsDisplayer results={this.results}/>
+        content = <ResultsDisplayer results={this.results} resetClient={this.resetClient}/>
       break;
       case 'votes':
         content = <VoteDrawings
