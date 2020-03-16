@@ -24,7 +24,7 @@ function ResultsDisplayer(props){
         break;
       case 2:
         prefix = '3rd';
-        size = '100%';
+        size = '125%';
         break;
       default:
         break;
@@ -36,10 +36,21 @@ function ResultsDisplayer(props){
     )
   });
 
+  const other_players = items.slice(3).map((who) => {
+    return(
+      <div>
+        <p>{who[0]}: {who[1]} vote(s).</p>
+      </div>
+    )
+  })
+
   return (
     <div>
     <h2>Results!</h2>
+    <h3>Podium</h3>
     {podium}
+    <h3>The others</h3>
+    {other_players}
     </div>
   );
 }

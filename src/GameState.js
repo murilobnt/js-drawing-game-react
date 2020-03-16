@@ -63,8 +63,24 @@ class GameState extends React.Component {
     switch(j_message.about){
       case 'op_return':
       break;
+      case 'abort_game':
+        this.setState({
+          game_state : 'menu',
+          name : '',
+          connected: false,
+          subject_index : 0,
+          game_content : {},
+          votes : {},
+          await_reason: ''
+        });
+
+        this.votes_on_player = {};
+        this.results = {};
+
+        alert(j_message.reason + ". Finishing the game...");
+      break;
       case 'state':
-      this.setState({game_state : j_message.state_id});
+        this.setState({game_state : j_message.state_id});
       break;
       case 'next_drawing':
       if(this.state.subject_index === this.subjects.length - 1){
