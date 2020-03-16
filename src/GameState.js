@@ -92,6 +92,7 @@ class GameState extends React.Component {
         this.ws.send(JSON.stringify({action: 'ready_for_votes'}));
       } else {
         this.setState({subject_index : this.state.subject_index + 1});
+        this.setState({game_state: 'drawing'});
       }
       break;
       case 'votes':
@@ -169,6 +170,7 @@ class GameState extends React.Component {
           onSelect = { (img) => {
                         const subject = this.subjects[this.state.subject_index].name;
                         this.ws.send(JSON.stringify({action: 'send_drawing', subject: subject, img:img, cli_hash: this.cli_hash}))
+                        this.setState({game_state: 'waiting_screen', await_reason: 'Waiting for all drawers to finish.'})
                         }
                      }
         />
