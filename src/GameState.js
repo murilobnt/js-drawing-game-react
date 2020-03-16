@@ -6,15 +6,6 @@ import GameMenu from './GameMenu'
 import VoteDrawings from './VoteDrawings'
 
 class GameState extends React.Component {
-  subjects = [
-    {
-      name : 'smiley face'
-    },
-    {
-      name : 'house'
-    }
-  ]
-
   constructor(props){
     super(props);
 
@@ -25,7 +16,8 @@ class GameState extends React.Component {
       subject_index : 0,
       game_content : {},
       votes : {},
-      await_reason: ''
+      await_reason: '',
+      subjects: []
     }
 
     this.cli_hash = Math.random().toString(36).substring(7);
@@ -67,7 +59,8 @@ class GameState extends React.Component {
       subject_index : 0,
       game_content : {},
       votes : {},
-      await_reason: ''
+      await_reason: '',
+      subjects: []
     });
 
     this.votes_on_player = {};
@@ -83,11 +76,11 @@ class GameState extends React.Component {
         this.resetClient();
         alert(j_message.reason + ". Finishing the game...");
       break;
-      case 'state':
-        this.setState({game_state : j_message.state_id});
+      case 'start_drawing':
+        this.setState({game_state : 'drawing', subjects: j_message.subjects});
       break;
       case 'next_drawing':
-      if(this.state.subject_index === this.subjects.length - 1){
+      if(this.state.subject_index === this.state.subjects.length - 1){
         this.setState({game_state: 'waiting_screen', await_reason: 'Waiting for all voters to cast their votes.'})
         this.ws.send(JSON.stringify({action: 'ready_for_votes'}));
       } else {
@@ -166,9 +159,9 @@ class GameState extends React.Component {
       case 'drawing':
         content =
           <DrawingBoard
-          subject = {this.subjects[this.state.subject_index].name}
+          subject = {this.state.subjects[this.state.subject_index]}
           onSelect = { (img) => {
-                        const subject = this.subjects[this.state.subject_index].name;
+                        const subject = this.state.subjects[this.state.subject_index];
                         this.ws.send(JSON.stringify({action: 'send_drawing', subject: subject, img:img, cli_hash: this.cli_hash}))
                         this.setState({game_state: 'waiting_screen', await_reason: 'Waiting for all drawers to finish.'})
                         }
