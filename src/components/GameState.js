@@ -5,6 +5,8 @@ import ResultsDisplayer from './ResultsDisplayer'
 import GameMenu from './GameMenu'
 import VoteDrawings from './VoteDrawings'
 
+import {connectToWS} from './../utils.js'
+
 class GameState extends React.Component {
   constructor(props){
     super(props);
@@ -24,7 +26,6 @@ class GameState extends React.Component {
     this.votes_on_player = {};
     this.results = {};
 
-    this.connect = this.connect.bind(this)
     this.onJoinPlayers = this.onJoinPlayers.bind(this)
     this.onJoinVoters = this.onJoinVoters.bind(this)
     this.onNameChange = this.onNameChange.bind(this)
@@ -33,7 +34,11 @@ class GameState extends React.Component {
     this.onFinishVoting = this.onFinishVoting.bind(this)
     this.resetClient = this.resetClient.bind(this)
 
-    this.connect();
+    this.ws = connectToWS(window.location.origin.replace(/^http/, 'ws').replace(/:3000/, ':30000'),
+                          () => {
+                            this.setState({connected : true});
+                          },
+                          this.handleReceivedMessage)
   }
 
   renderResultsDisplayer(){
@@ -66,7 +71,11 @@ class GameState extends React.Component {
     this.votes_on_player = {};
     this.results = {};
 
-    this.connect();
+    this.ws = connectToWS(window.location.origin.replace(/^http/, 'ws').replace(/:3000/, ':30000'),
+                          () => {
+                            this.setState({connected : true});
+                          },
+                          this.handleReceivedMessage)
   }
 
   handleReceivedMessage(message){
@@ -101,17 +110,6 @@ class GameState extends React.Component {
       default:
       break;
     }
-  }
-
-  connect(){
-    let HOST = window.location.origin.replace(/^http/, 'ws').replace(/:3000/, ':30000')
-    this.ws = new WebSocket(HOST);
-
-    this.ws.onopen = () => {
-      this.setState({connected : true});
-    }
-
-    this.ws.onmessage = this.handleReceivedMessage
   }
 
   onJoinPlayers(){

@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
-import GameState from './GameState'
+// import GameState from './components/GameState'
+import SubjectsList from './components/SubjectsList'
 
-ReactDOM.render(<GameState />, document.getElementById('root'));
+ReactDOM.render(<SubjectsList />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
